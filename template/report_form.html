@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="consultation-card">
+    <div class="card-header">
+        <h2><i class="fas fa-file-medical"></i> Generate Medical Report</h2>
+        <p>Enter your location to get nearby hospital recommendations and generate your complete consultation report.</p>
+    </div>
+    
+    {% if error %}
+    <div class="error-message">
+        <i class="fas fa-exclamation-triangle"></i>
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    <!-- Consultation Summary -->
+    <div class="consultation-summary">
+        <h3>Consultation Summary</h3>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <strong>Primary Condition:</strong>
+                <span>{{ triage_result.predicted_disease.replace('_', ' ').title() }}</span>
+            </div>
+            <div class="summary-item">
+                <strong>Confidence:</strong>
+                <span>{{ "%.1f"|format(triage_result.confidence * 100) }}%</span>
+            </div>
+            {% if specialist_result %}
+            <div class="summary-item">
+                <strong>Specialist Assessment:</strong>
+                <span>{{ specialist_result.risk_level }} Risk ({{ specialist_type.title() }})</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Location Form -->
+    <form method="POST" action="{{ url_for('generate_report') }}" class="report-form">
+        <div class="input-group">
+            <label for="location">📍 Your Location</label>
+            <input 
+                type="text" 
+                name="location" 
+                id="location" 
+                placeholder="e.g., Mumbai, India"
+                required
+            >
+            <small>Enter your city or area to find nearby hospitals and medical facilities.</small>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-chart-line"></i>
+                Generate Complete Report
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Navigation -->
+<div class="navigation-buttons">
+    <a href="{{ url_for('index') }}" class="btn btn-outline">
+        <i class="fas fa-arrow-left"></i>
+        New Consultation
+    </a>
+</div>
+{% endblock %}
+

@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}HealthSage - Medical Consultation Report{% endblock %}
+
+{% block content %}
+<div class="report-container">
+    <div class="report-header">
+        <h2><i class="fas fa-file-medical-alt"></i> HealthSage Medical Consultation Report</h2>
+        <p class="report-timestamp">Generated on {{ timestamp }}</p>
+    </div>
+    
+    <!-- Primary Assessment -->
+    <div class="report-section">
+        <h3>🩺 Primary Assessment</h3>
+        <div class="assessment-grid">
+            <div class="assessment-item">
+                <div class="assessment-label">Symptoms</div>
+                <div class="assessment-value">{{ symptoms }}</div>
+            </div>
+            <div class="assessment-item">
+                <div class="assessment-label">Identified Condition</div>
+                <div class="assessment-value condition-highlight">{{ triage_result.predicted_disease.replace('_', ' ').title() }}</div>
+            </div>
+            <div class="assessment-item">
+                <div class="assessment-label">Analysis Confidence</div>
+                <div class="assessment-value confidence-{{ triage_result.confidence_level }}">{{ "%.1f"|format(triage_result.confidence * 100) }}%</div>
+            </div>
+            <div class="assessment-item">
+                <div class="assessment-label">Recommended Action</div>
+                <div class="assessment-value action-highlight">{{ triage_result.recommended_action }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Specialist Assessment -->
+    {% if specialist_result %}
+    <div class="report-section">
+        <h3>{{ '🔬 Diabetes Assessment' if specialist_type == 'diabetes' else '❤️ Cardiac Assessment' }}</h3>
+        <div class="assessment-grid">
+            <div class="assessment-item">
+                <div class="assessment-label">Risk Level</div>
+                <div class="assessment-value risk-{{ specialist_result.risk_level.lower() }}">{{ specialist_result.risk_level }} Risk</div>
+            </div>
+            <div class="assessment-item">
+                <div class="assessment-label">Assessment Confidence</div>
+                <div class="assessment-value">{{ "%.1f"|format(specialist_result.confidence * 100) }}%</div>
+            </div>
+            <div class="assessment-item">
+                <div class="assessment-label">{{ 'Diabetes' if specialist_type == 'diabetes' else 'Heart Disease' }} Probability</div>
+                <div class="assessment-value">{{ "%.1f"|format((specialist_result.probability_diabetes if specialist_type == 'diabetes' else specialist_result.probability_heart_disease) * 100) }}%</div>
+            </div>
+            <div class="assessment-item">
+                <div class="assessment-label">Clinical Prediction</div>
+                <div class="assessment-value">{{ '⚠️ Positive Risk Detected' if specialist_result.prediction == 1 else '✅ Low Risk Profile' }}</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Hospital Recommendations -->
+    {% if hospital_data %}
+    <div class="report-section">
+        <h3>🏥 Hospital Recommendations</h3>
+        <div class="hospital-info">
+            <div class="hospital-details">
+                <div class="hospital-item">
+                    <strong>Location:</strong> {{ location }}
+                </div>
+                <div class="hospital-item">
+                    <strong>Search Type:</strong> {{ hospital_data.search_type }}
+                </div>
+                <div class="hospital-item">
+                    <strong>Instructions:</strong> {{ hospital_data.instructions }}
+                </div>
+            </div>
+            
+            <div class="hospital-actions">
+                <a href="{{ hospital_data.google_maps_link }}" target="_blank" class="btn btn-primary hospital-link">
+                    <i class="fas fa-map-marker-alt"></i>
+                    View Hospitals on Map
+                </a>
+            </div>
+            
+            <div class="emergency-contacts">
+                <strong>Emergency Contacts:</strong> {{ hospital_data.emergency_contact }}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Report Actions -->
+    <div class="report-actions">
+        <a href="{{ url_for('download_report') }}" class="btn btn-secondary">
+            <i class="fas fa-download"></i>
+            Download Report
+        </a>
+        <a href="{{ url_for('index') }}" class="btn btn-outline">
+            <i class="fas fa-plus"></i>
+            New Consultation
+        </a>
+    </div>
+    
+    <!-- Medical Disclaimer -->
+    <div class="medical-disclaimer">
+        <h4>⚠️ Important Medical Disclaimer</h4>
+        <ul>
+            <li>This is an AI-assisted preliminary assessment only</li>
+            <li>NOT a substitute for professional medical diagnosis or treatment</li>
+            <li>Seek immediate medical attention for emergency symptoms</li>
+            <li>Always consult qualified healthcare providers for final diagnosis and treatment</li>
+            <li>Verify all hospital information before visiting</li>
+        </ul>
+        <div class="emergency-notice">
+            <strong>For Medical Emergencies:</strong> Call 108 (Ambulance) or 102 (Medical Emergency)
+        </div>
+    </div>
+</div>
+{% endblock %}

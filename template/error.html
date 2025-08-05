@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="consultation-card">
+    <div class="card-header">
+        <h2><i class="fas fa-exclamation-triangle"></i> System Error</h2>
+        <p>We encountered an issue processing your request.</p>
+    </div>
+    
+    <div class="error-display">
+        <div class="error-icon">
+            <i class="fas fa-times-circle"></i>
+        </div>
+        <div class="error-content">
+            <h3>Error Details</h3>
+            <p>{{ error }}</p>
+        </div>
+    </div>
+    
+    <div class="error-actions">
+        <a href="{{ url_for('index') }}" class="btn btn-primary">
+            <i class="fas fa-home"></i>
+            Back to Home
+        </a>
+        <button onclick="history.back()" class="btn btn-outline">
+            <i class="fas fa-arrow-left"></i>
+            Go Back
+        </button>
+    </div>
+    
+    <div class="support-info">
+        <h4>Need Help?</h4>
+        <p>If the problem persists, please contact our support team or try again later.</p>
+        <p><strong>Emergency:</strong> For medical emergencies, call 108 (Ambulance) or 102 (Medical Emergency)</p>
+    </div>
+</div>
+{% endblock %}

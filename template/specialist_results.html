@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="consultation-card">
+    <div class="card-header">
+        <h2>
+            <i class="fas fa-{{ 'microscope' if specialist_type == 'diabetes' else 'heart' }}"></i> 
+            {{ 'Diabetes' if specialist_type == 'diabetes' else 'Cardiac' }} Assessment Complete
+        </h2>
+        <p>Our specialist AI has completed the risk assessment.</p>
+    </div>
+    
+    <!-- Specialist Results -->
+    <div class="agent-response">
+        <div class="agent-header">
+            <div class="agent-avatar">{{ '👩‍⚕️' if specialist_type == 'diabetes' else '🫀' }}</div>
+            <div class="agent-info">
+                <h3>{{ 'Diabetes' if specialist_type == 'diabetes' else 'Cardiac' }} Specialist Agent</h3>
+                <p>Advanced risk assessment and analysis</p>
+            </div>
+        </div>
+        <div class="agent-content">
+            <div class="result-grid">
+                <div class="result-item">
+                    <strong>Risk Assessment:</strong>
+                    <span class="risk-level risk-{{ result.risk_level.lower() }}">{{ result.risk_level }} Risk</span>
+                </div>
+                <div class="result-item">
+                    <strong>Analysis Confidence:</strong>
+                    <span class="confidence-score">{{ "%.1f"|format(result.confidence * 100) }}%</span>
+                </div>
+                <div class="result-item">
+                    <strong>{{ 'Diabetes' if specialist_type == 'diabetes' else 'Heart Disease' }} Probability:</strong>
+                    <span class="probability-score">
+                        {{ "%.1f"|format((result.probability_diabetes if specialist_type == 'diabetes' else result.probability_heart_disease) * 100) }}%
+                    </span>
+                </div>
+                <div class="result-item">
+                    <strong>Clinical Prediction:</strong>
+                    <span class="prediction-result">
+                        {{ '⚠️ Positive Risk Detected' if result.prediction == 1 else '✅ Low Risk Profile' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recommendations -->
+    <div class="recommendations">
+        <h3>Clinical Recommendations</h3>
+        {% if result.risk_level == 'High' %}
+        <div class="recommendation-high">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>
+                <strong>High Risk Detected:</strong>
+                {% if specialist_type == 'diabetes' %}
+                Schedule appointment with endocrinologist within 1-2 weeks. Monitor blood glucose levels daily and follow diabetic diet plan.
+                {% else %}
+                Urgent cardiology consultation recommended. Monitor blood pressure regularly and consider cardiac stress test.
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class="recommendation-low">
+            <i class="fas fa-check-circle"></i>
+            <div>
+                <strong>Low Risk Profile:</strong>
+                Continue regular health monitoring and maintain healthy lifestyle habits. Routine check-ups recommended.
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Next Steps -->
+    <div class="next-steps">
+        <h3>Next Steps</h3>
+        <div class="action-buttons">
+            <a href="{{ url_for('report_form') }}" class="btn btn-primary">
+                <i class="fas fa-file-medical"></i>
+                Generate Final Report
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation -->
+<div class="navigation-buttons">
+    <a href="{{ url_for('index') }}" class="btn btn-outline">
+        <i class="fas fa-arrow-left"></i>
+        New Consultation
+    </a>
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="consultation-card">
+    <div class="card-header">
+        <h2><i class="fas fa-check-circle"></i> Analysis Complete</h2>
+        <p>Our AI has analyzed your symptoms. Here are the results:</p>
+    </div>
+    
+    <!-- User Symptoms -->
+    <div class="symptoms-display">
+        <h4>Your Symptoms:</h4>
+        <p class="symptoms-text">{{ symptoms }}</p>
+    </div>
+    
+    <!-- Triage Results -->
+    <div class="agent-response">
+        <div class="agent-header">
+            <div class="agent-avatar">🧑‍⚕️</div>
+            <div class="agent-info">
+                <h3>Medical Triage Agent</h3>
+                <p>AI-powered symptom analysis</p>
+            </div>
+        </div>
+        <div class="agent-content">
+            <div class="result-grid">
+                <div class="result-item">
+                    <strong>Identified Condition:</strong>
+                    <span class="condition-name">{{ result.predicted_disease.replace('_', ' ').title() }}</span>
+                </div>
+                <div class="result-item">
+                    <strong>Confidence Level:</strong>
+                    <span class="confidence-score confidence-{{ result.confidence_level }}">
+                        {{ "%.1f"|format(result.confidence * 100) }}% ({{ result.confidence_level }})
+                    </span>
+                </div>
+                <div class="result-item">
+                    <strong>Recommended Action:</strong>
+                    <span class="recommended-action">{{ result.recommended_action }}</span>
+                </div>
+                {% if result.rule_override %}
+                <div class="result-item">
+                    <span class="rule-override">⚡ High-precision pattern detected</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Next Steps -->
+    <div class="next-steps">
+        <h3>Next Steps</h3>
+        
+        {% if result.predicted_disease == 'diabetes' %}
+        <p>Based on your symptoms, we recommend a detailed diabetes risk assessment.</p>
+        <div class="action-buttons">
+            <a href="{{ url_for('specialist_form', condition_type='diabetes') }}" class="btn btn-primary">
+                <i class="fas fa-microscope"></i>
+                Diabetes Assessment
+            </a>
+            <a href="{{ url_for('report_form') }}" class="btn btn-secondary">
+                <i class="fas fa-file-medical"></i>
+                Skip to Report
+            </a>
+        </div>
+        
+        {% elif result.predicted_disease == 'hypertension' %}
+        <p>Based on your symptoms, we recommend a detailed cardiac risk assessment.</p>
+        <div class="action-buttons">
+            <a href="{{ url_for('specialist_form', condition_type='cardiac') }}" class="btn btn-primary">
+                <i class="fas fa-heart"></i>
+                Cardiac Assessment
+            </a>
+            <a href="{{ url_for('report_form') }}" class="btn btn-secondary">
+                <i class="fas fa-file-medical"></i>
+                Skip to Report
+            </a>
+        </div>
+        
+        {% else %}
+        <p>No specialized assessment available for {{ result.predicted_disease.replace('_', ' ') }}. Proceeding to general recommendations.</p>
+        <div class="action-buttons">
+            <a href="{{ url_for('report_form') }}" class="btn btn-primary">
+                <i class="fas fa-file-medical"></i>
+                Generate Report
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Emergency Notice -->
+    {% if "URGENT" in result.recommended_action %}
+    <div class="emergency-notice">
+        <i class="fas fa-exclamation-triangle"></i>
+        <strong>URGENT ATTENTION REQUIRED:</strong> Based on your symptoms, immediate medical attention is recommended. 
+        Please contact emergency services or visit the nearest hospital.
+        <br><strong>Emergency Numbers:</strong> 108 (Ambulance) | 102 (Medical Emergency)
+    </div>
+    {% endif %}
+</div>
+
+<!-- Navigation -->
+<div class="navigation-buttons">
+    <a href="{{ url_for('index') }}" class="btn btn-outline">
+        <i class="fas fa-arrow-left"></i>
+        New Consultation
+    </a>
+</div>
+{% endblock %}
